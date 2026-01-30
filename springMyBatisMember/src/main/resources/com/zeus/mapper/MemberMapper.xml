@@ -35,26 +35,29 @@
 		regDate FROM mybatisMember where enabled = '1' ORDER BY regDate DESC
 	</select>
 
-	<select id="search" resultType="member">
-        SELECT * FROM mybatisMember
-        <where>
-            <if test="keyword != null and keyword != ''">
-                <choose>
-                    <when test="searchType == 'id'">
-                        AND ID LIKE '%'  #{keyword}  '%'
-                    </when>
-                    <when test="searchType == 'name'">
-                        AND NAME LIKE '%'  #{keyword}  '%'
-                    </when>
-                    <otherwise>
-                        AND NAME LIKE '%'  #{keyword}  '%'
-                    </otherwise>
-                </choose>
-            </if>
-        </where>
-        AND ENABLED = '1' ORDER BY no DESC
-    </select>
-	
+	<select id="search" resultType="Member">
+		SELECT *
+		FROM mybatisMember
+		<where>
+			<if test="keyword != null and keyword != ''">
+				<choose>
+					<when test="searchType == 'id'">
+						ID LIKE '%' || #{keyword} || '%'
+					</when>
+					<when test="searchType == 'name'">
+						NAME LIKE '%' || #{keyword} || '%'
+					</when>
+					<otherwise>
+						NAME LIKE '%' || #{keyword} || '%'
+					</otherwise>
+				</choose>
+			</if>
+			AND ENABLED = '1'
+		</where>
+		ORDER BY no DESC
+	</select>
+
+
 	<update id="update">
 		UPDATE mybatisMember SET name =#{name}, pw =#{pw}
 		WHERE no = #{no} AND enabled = '1'
