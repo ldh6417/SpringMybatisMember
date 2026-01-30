@@ -7,12 +7,12 @@ import lombok.Data;
 
 @Data
 public class Member {
-	private int No; 
-	private String Id; 
-	private String Pw; 
-	private String Name; 
+	private int no; 
+	private String id; 
+	private String pw; 
+	private String name; 
 	private Date regDate; 
 	private Date modDate; 
-	 
+
 	private List<MemberAuth> authList;
 }

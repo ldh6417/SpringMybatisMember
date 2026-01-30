@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class MemberAuth {
-	private int No; 
+	private int no; 
 	private String auth;
 }
