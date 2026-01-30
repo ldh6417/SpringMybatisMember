@@ -44,9 +44,9 @@ public class MemberController {
 		return "member/failed";
 	}
 
-	@GetMapping("/memberlist")
+	@GetMapping("/memberList")
 	public String memberList(Model model) {
-		log.info("memberlist");
+		log.info("memberList");
 
 		try {
 			List<Member> memberList = memberService.list();
@@ -107,7 +107,35 @@ public class MemberController {
 		model.addAttribute("message", "%d 님의 회원수정성공".formatted(m.getNo()));
 		return "member/failed";
 	}
-	
 
+	@GetMapping("/delete")
+	public String memberDelete(Member member, Model model) {
+		log.info("memberDetail member = " + member.toString());
+		try {
+			int count = memberService.delete(member);
+			if (count > 0) {
+				model.addAttribute("message", "%d 님의 정보 삭제가 성공하였습니다.".formatted(member.getNo()));
+				return "board/success";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		model.addAttribute("message", "%d 님의 정보가 실패하였습니다..".formatted(member.getNo()));
+		return "member/failed";
+
+	}
+	
+	@GetMapping("/search")
+	public String memberSearch(Member member ,Model model) {
+		log.info("memberSearch = " + member.toString());
+		try {
+			List<Member> memberList = memberService.memberSearch(member);
+			model.addAttribute("memberList", memberList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "member/memberList";
+	}
 
 }

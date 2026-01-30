@@ -1,87 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeus.mapper.MemberMapper">
 
-	<!-- 회원 + 권한 매핑 -->
+	<!-- 외부 조인을 사용하여 얻은 검색 결과에 대한 매핑을 정의한다. -->
 	<resultMap type="Member" id="memberMap">
 		<id property="no" column="no" />
+		<result property="no" column="no" />
 		<result property="id" column="id" />
 		<result property="pw" column="pw" />
 		<result property="name" column="name" />
-		<result property="regDate" column="regdate" />
-		<result property="modDate" column="moddate" />
-		<collection property="authList" resultMap="authMap" />
+		<result property="regDate" column="regDate" />
+		<result property="modDate" column="modDate" />
+		<collection property="authList" resultMap="authMap">
+		</collection>
 	</resultMap>
-
 	<resultMap type="MemberAuth" id="authMap">
 		<result property="no" column="no" />
 		<result property="auth" column="auth" />
 	</resultMap>
 
-	<!-- 회원 단건 조회 (권한 포함) -->
+	<!-- 부모 객체와 관계 객체를 작성하는 데 필요한 모든 레코드를 검색하도록 외부 조인을 사용한 SQL을 정의한다. -->
+
 	<select id="read" resultMap="memberMap">
-		SELECT
-		m.no, m.id,
-		m.pw, m.name,
-		m.regdate,
-		m.moddate,
-		a.auth
-		FROM mybatisMember m
-		INNER JOIN
-		mybatisMemberAuth a
-		ON m.no = a.no
+		SELECT m.no, m.id, name, regDate,
+		modDate, auth
+		FROM mybatisMember m INNER JOIN mybatismemberAuth a ON
+		m.no = a.no
 		WHERE
-		m.no = #{no}
+		m.no = #{no} and m.enabled = '1'
 	</select>
 
-	<!-- 회원 목록 -->
 	<select id="list" resultType="Member">
-		SELECT no, id, pw, name, regdate
-		FROM mybatisMember
-		ORDER BY regdate DESC
+		SELECT no, id, pw, name, coin,
+		regDate FROM mybatisMember where enabled = '1' ORDER BY regDate DESC
 	</select>
 
-	<!-- 회원 수정 -->
+	<select id="search" resultType="member">
+        SELECT * FROM mybatisMember
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'id'">
+                        AND ID LIKE '%'  #{keyword}  '%'
+                    </when>
+                    <when test="searchType == 'name'">
+                        AND NAME LIKE '%'  #{keyword}  '%'
+                    </when>
+                    <otherwise>
+                        AND NAME LIKE '%'  #{keyword}  '%'
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        AND ENABLED = '1' ORDER BY no DESC
+    </select>
+	
 	<update id="update">
-		UPDATE mybatisMember
-		SET name = #{name}, pw = #{pw}
-		WHERE no =
-		#{no}
+		UPDATE mybatisMember SET name =#{name}, pw =#{pw}
+		WHERE no = #{no} AND enabled = '1'
 	</update>
 
-	<!-- 회원 삭제 -->
 	<delete id="delete">
-		DELETE FROM mybatisMember
-		WHERE no = #{no}
+		<!-- DELETE FROM mybatisMember WHERE no = #{no} -->
+		UPDATE mybatisMember SET enabled = '0' WHERE no = #{no}
 	</delete>
 
-	<!-- 권한 삭제 -->
 	<delete id="deleteAuth">
-		DELETE FROM mybatisMemberAuth
-		WHERE no = #{no}
+		DELETE FROM mybatisMemberAuth WHERE no = #{no}
 	</delete>
 
-	<!-- 회원 등록 -->
+	<!-- 데이터베이스에서 기본키를 인수로 전달한 자바빈의 프로퍼티를 통해 취득한다. -->
+	<!-- <insert id="create" useGeneratedKeys="true" keyProperty="userNo"> -->
 	<insert id="create" parameterType="Member">
-
 		<selectKey keyProperty="no" resultType="int" order="BEFORE">
-			SELECT
-			mybatisMember_seq.NEXTVAL FROM dual
+			select
+			mybatismember_seq.NEXTVAL FROM DUAL
 		</selectKey>
-
-		INSERT INTO mybatisMember (no, id, pw, name)
-		VALUES (#{no}, #{id},
-		#{pw}, #{name})
-
+		INSERT INTO mybatisMember(no, id, pw, name, coin)
+		VALUES(#{no},#{id},#{pw},#{name},#{coin})
 	</insert>
 
-	<!-- 권한 등록 -->
 	<insert id="createAuth">
-		INSERT INTO mybatisMemberAuth (no, auth)
-		VALUES
-		(#{no}, #{auth})
+		INSERT INTO mybatisMemberAuth(no, auth) VALUES(#{no},
+		#{auth})
 	</insert>
+
 
 </mapper>

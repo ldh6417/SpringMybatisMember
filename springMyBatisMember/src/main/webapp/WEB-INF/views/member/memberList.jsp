@@ -159,6 +159,19 @@ body {
 			</thead>
 
 			<tbody>
+
+				<!-- 검색 영역은 choose 밖으로 빼기 -->
+				<div class="search-container">
+					<form action="/member/search" method="get" class="search-form">
+						<select name="searchType" class="search-select">
+							<option value="id">id</option>
+							<option value="name">name</option>
+						</select> <input type="text" name="keyword" class="search-input"
+							placeholder="Search member...">
+						<button type="submit" class="btn-search">SEARCH</button>
+					</form>
+				</div>
+
 				<c:choose>
 
 					<c:when test="${not empty memberList}">
@@ -186,7 +199,9 @@ body {
 					</c:otherwise>
 
 				</c:choose>
+
 			</tbody>
+
 		</table>
 
 	</div>
