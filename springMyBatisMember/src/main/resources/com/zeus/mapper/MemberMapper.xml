@@ -22,13 +22,18 @@
 
 	<!-- 회원 단건 조회 (권한 포함) -->
 	<select id="read" resultMap="memberMap">
-		SELECT m.no, m.id, m.pw, m.name,
-		m.regdate, m.moddate, a.auth
+		SELECT
+		m.no, m.id,
+		m.pw, m.name,
+		m.regdate,
+		m.moddate,
+		a.auth
 		FROM mybatisMember m
 		INNER JOIN
 		mybatisMemberAuth a
 		ON m.no = a.no
-		WHERE m.no = #{no}
+		WHERE
+		m.no = #{no}
 	</select>
 
 	<!-- 회원 목록 -->
@@ -41,7 +46,7 @@
 	<!-- 회원 수정 -->
 	<update id="update">
 		UPDATE mybatisMember
-		SET name = #{name}
+		SET name = #{name}, pw = #{pw}
 		WHERE no =
 		#{no}
 	</update>

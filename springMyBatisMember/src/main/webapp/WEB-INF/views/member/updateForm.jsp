@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,7 +66,7 @@ body {
 	font-weight: bold;
 }
 
-input[type="text"], textarea {
+input[type="text"], input[type="password"] {
 	width: 100%;
 	padding: 12px 15px;
 	background: #0b0b0b;
@@ -77,15 +78,10 @@ input[type="text"], textarea {
 	transition: 0.3s;
 }
 
-input[type="text"]:focus, textarea:focus {
+input[type="text"]:focus, input[type="password"]:focus {
 	border-color: var(--t1-red);
 	outline: none;
 	box-shadow: 0 0 10px rgba(226, 1, 45, 0.3);
-}
-
-textarea {
-	resize: none;
-	height: 250px;
 }
 
 /* Buttons */
@@ -140,6 +136,53 @@ textarea {
 	color: #fff;
 }
 
+/* 권한 선택 영역 스타일 */
+.btn-form {
+	padding-top: 20px;
+	background: #1a1a1a;
+	border-top: 1px solid #333;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	background: #1a1a1a;
+}
+
+.btn-form select {
+	width: 100%;
+	padding: 12px 15px;
+	background: #0f0f0f;
+	border: 1px solid #444;
+	border-radius: 5px;
+	color: #ccc;
+	font-size: 0.9rem;
+	font-family: 'Pretendard', sans-serif;
+	appearance: none; /* 기본 화살표 제거 (선택사항) */
+	cursor: default;
+	transition: 0.3s;
+}
+
+/* disabled 상태일 때의 스타일 강조 */
+.btn-form select:disabled {
+	background: #111;
+	color: var(--t1-gold); /* 읽기 전용일 때 골드 포인트 */
+	border-color: #333;
+	opacity: 0.8;
+}
+
+/* select 박스 사이의 간격 및 라벨 느낌의 효과 */
+.btn-form select:focus {
+	outline: none;
+	border-color: var(--t1-red);
+	box-shadow: 0 0 10px rgba(226, 1, 45, 0.2);
+}
+
+/* 폼 내부 레이아웃 정렬 */
+.btn-form form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
 /* Decoration */
 .bottom-deco {
 	margin-top: 30px;
@@ -174,36 +217,58 @@ textarea {
 	<div class="write-container">
 		<div class="header">
 			<h1>
-				T1 COMMUNITY<br><span>${board.writer}님의 게시판 수정</span>
+				회원정보<br> <span>${member.id}님의 회원 정보 수정</span>
 			</h1>
 		</div>
-
-		<form action="/board/update" method="post">
+		<form:form modelAttribute="member" action="/member/update"
+			method="post">
 			<div class="form-group">
-				<label for="no">작성자 번호</label> <input type="text"
-					id="no" name="no" value="${board.no}" readonly>
+				<label for="no">회원번호</label> <input type="text" id="no" name="no"
+					value="${member.no}" style="color: #989898" readonly>
 			</div>
 			<div class="form-group">
-				<label for="writer">작성자(Writer)</label> <input type="text"
-					id="writer" name="writer" value="${board.writer}" required>
-			</div>
-
-			<div class="form-group">
-				<label for="title">제목(Title)</label> <input type="text" id="title"
-					name="title" value="${board.title}" required>
+				<label for="id">회원ID</label> <input type="text" id="id" name="id"
+					value="${member.id}" style="color: #989898" readonly>
 			</div>
 
 			<div class="form-group">
-				<label for="content">내용(Content)</label>
-				<textarea id="content" name="content">${board.content}</textarea>
+				<label for="name">회원NAME</label> <input type="text" id="name"
+					name="name" value="${member.name}" required>
+			</div>
+
+			<div class="form-group">
+				<label for="pw">회원PW</label> <input type="password" id="pw"
+					name="pw" value="${member.pw}" required>
+			</div>
+			<div class="btn-form">
+
+				<form:hidden path="no" />
+				<form:select path="authList[0].auth" disabled="">
+					<form:option value="" label="=== 부여된 권한이 없습니다 ===" />
+					<form:option value="ROLE_USER" label="사용자" />
+					<form:option value="ROLE_MEMBER" label="회원" />
+					<form:option value="ROLE_ADMIN" label="관리자" />
+				</form:select>
+				<form:select path="authList[1].auth" disabled="">
+					<form:option value="" label="=== 부여된 권한이 없습니다 ===" />
+					<form:option value="ROLE_USER" label="사용자" />
+					<form:option value="ROLE_MEMBER" label="회원" />
+					<form:option value="ROLE_ADMIN" label="관리자" />
+				</form:select>
+				<form:select path="authList[2].auth" disabled="">
+					<form:option value="" label="=== 부여된 권한이 없습니다 ===" />
+					<form:option value="ROLE_USER" label="사용자" />
+					<form:option value="ROLE_MEMBER" label="회원" />
+					<form:option value="ROLE_ADMIN" label="관리자" />
+				</form:select>
 			</div>
 
 			<div class="btn-area">
-				<a href="/board/boardlist" class="btn-list">게시판 목록</a>
-				<button type="submit" class="btn btn-submit">게시판 수정</button>
-				<button type="reset" class="btn btn-reset">수정 취소</button>
+				<a href="/member/memberList" class="btn-list">회원리스트</a>
+				<button type="submit" class="btn btn-submit">회원수정</button>
+				<button type="reset" class="btn btn-reset">수정취소</button>
 			</div>
-		</form>
+		</form:form>
 
 		<div class="bottom-deco">[ SYSTEM: READY TO TRANSMIT DATA TO
 			JDBCBOARD ]</div>

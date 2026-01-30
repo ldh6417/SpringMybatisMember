@@ -1,5 +1,7 @@
 package com.zeus.controller;
 
+import java.util.List;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,60 +44,70 @@ public class MemberController {
 		return "member/failed";
 	}
 
-	/*
-	 * 
-	 * @GetMapping("/boardlist") public String boardList(Model model) {
-	 * log.info("boardlist");
-	 * 
-	 * try { List<Board> boardList = boardService.list();
-	 * 
-	 * model.addAttribute("boardList", boardList);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); }
-	 * 
-	 * return "board/boardList"; }
-	 * 
-	 * @GetMapping("/detail") public String boardDetail(Board b, Model model) {
-	 * log.info("boardDetail board = " + b.toString());
-	 * 
-	 * try { Board board = boardService.read(b); if (board == null) { return
-	 * "board/failed"; } model.addAttribute("board", board);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } return "board/detail"; }
-	 * 
-	 * @GetMapping("/delete") public String boardDelete(Board board, Model model) {
-	 * log.info("boardDetail board = " + board.toString());
-	 * 
-	 * try { boardService.delete(board); } catch (Exception e) {
-	 * e.printStackTrace(); model.addAttribute("message",
-	 * "%d 님의 정보 삭제가 실패하였습니다.".formatted(board.getNo())); return "board/failed"; }
-	 * model.addAttribute("message", "%d 님의 정보가 삭제되었습니다.".formatted(board.getNo()));
-	 * return "board/success"; }
-	 * 
-	 * @GetMapping("/updateForm") public String boardUpdateForm(Board b, Model
-	 * model) { log.info("updateForm board = " + b.toString());
-	 * 
-	 * try { Board board = boardService.read(b); if (board == null) {
-	 * model.addAttribute("message", "%d 님의 정보가 없습니다".formatted(b.getNo())); return
-	 * "board/failed"; } model.addAttribute("board", board); } catch (Exception e) {
-	 * e.printStackTrace(); } return "board/updateForm"; }
-	 * 
-	 * @PostMapping("/update") public String updateBoard(Model model, Board board) {
-	 * log.info("updateBoard board = " + board.toString());
-	 * 
-	 * try { boardService.update(board); } catch (Exception e) {
-	 * e.printStackTrace(); model.addAttribute("message",
-	 * "%d 님의 게시판이 수정되지 않았습니다.".formatted(board.getNo())); return "board/failed"; }
-	 * model.addAttribute("message",
-	 * "%d 님의 게시판이 수정되었습니다.".formatted(board.getNo())); return "board/success"; }
-	 * 
-	 * @GetMapping("/search") public String boardSearch(Model model, Board board) {
-	 * log.info("searchType = " + board.toString());
-	 * 
-	 * try { List<Board> boardList = boardService.boardSearch(board);
-	 * 
-	 * model.addAttribute("boardList", boardList);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } return "board/boardList"; }
-	 */
+	@GetMapping("/memberlist")
+	public String memberList(Model model) {
+		log.info("memberlist");
+
+		try {
+			List<Member> memberList = memberService.list();
+			model.addAttribute("memberList", memberList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return "member/memberList";
+	}
+
+	@GetMapping("/detail")
+	public String memberDetail(Member member, Model model) {
+		log.info("Detail" + member.toString());
+
+		try {
+			Member m = memberService.read(member);
+			if (m == null) {
+				return "member/failed";
+			}
+			model.addAttribute("member", m);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "member/detail";
+	}
+
+	@GetMapping("/updateForm")
+	public String memberUpdateForm(Member m, Model model) {
+		log.info("updateForm " + m.toString());
+
+		try {
+			Member member = memberService.read(m);
+			if (member == null) {
+				model.addAttribute("message", "%d 님의 정보가 없습니다".formatted(m.getNo()));
+				return "member/failed";
+			}
+			model.addAttribute("member", member);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "member/updateForm";
+	}
+
+	@PostMapping("/update")
+	public String memberUpdate(Member m, Model model) {
+		log.info("update" + m.toString());
+		try {
+			int count = memberService.update(m);
+			if (count > 0) {
+				model.addAttribute("message", "%d 님의 회원수정성공".formatted(m.getNo()));
+				return "member/success";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("message", "%d 님의 회원수정성공".formatted(m.getNo()));
+		return "member/failed";
+	}
+	
+
+
 }
